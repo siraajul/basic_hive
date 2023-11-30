@@ -11,10 +11,10 @@ class LogIn extends StatefulWidget {
 
 class _LogInState extends State<LogIn> {
   final  nameCtrl = TextEditingController();
-  final mailCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
 
   String? name = '';
-  String? mail = '';
+  String? address = '';
   final _mybox= Hive.box('mybox');
 
   //write Data
@@ -25,21 +25,22 @@ class _LogInState extends State<LogIn> {
 //read Data
   void readData()  {
     setState(() {
-      name = _mybox.get('name');
-      mail = _mybox.get('mail');
+      name = _mybox.get('name')??'';
+      address = _mybox.get('address')??'';
     });
 
   }
 
   //delete data
- void deleteData()  {
-
-    _mybox.delete(1);
-
-  }
+ void deleteData()
+ {
+    _mybox.delete('name');
+    _mybox.delete('address');
+ }
 
   @override
   Widget build(BuildContext context) {
+    print(DateTime.now());
     return  Scaffold(
       appBar: AppBar(
         title: const Text('Hive DB ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600),),
@@ -64,18 +65,23 @@ class _LogInState extends State<LogIn> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextField(
-                controller: mailCtrl,
+                controller: addressCtrl,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
-                    hintText: 'Enter Your Email'),
+                    labelText: 'Address',
+                    hintText: 'Enter Your address'),
               ),
             ),
+
+            const SizedBox(height: 32,),
             ElevatedButton(onPressed: ()  {
 
               writeData('name',nameCtrl.text);
-              writeData('mail',mailCtrl.text);
-              //final hiveData = Hive()
+              writeData('address',addressCtrl.text);
+
+              readData();
+              nameCtrl.text='';
+              addressCtrl.text='';
             },style: LogInButton, child: const Text('Save')),
             const SizedBox(height: 10,),
 
@@ -83,9 +89,20 @@ class _LogInState extends State<LogIn> {
               readData();
 
             },style: GetButton, child: const Text('Get')),
+            const SizedBox(height: 10,),
+            ElevatedButton(onPressed: ()  {
+              deleteData();
+              readData();
+              nameCtrl.text='';
+              addressCtrl.text='';
 
+            },style: GetButton, child: const Text('Delete')),
+
+            const SizedBox(height: 32,),
             Text('My name: $name'),
-            Text('My mail: $mail'),
+            const SizedBox(height: 8,),
+
+            Text('My address: $address'),
           ],
         ),
       ),
